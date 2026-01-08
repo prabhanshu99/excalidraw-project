@@ -3,11 +3,14 @@ import jwt from "jsonwebtoken"
 import { JWT_SECRET } from "@repo/be-common/config";
 import { middleware } from "./middleware";
 import { CreateRoomSchema, CreateUserSchema, SigninSchema } from "@repo/common/types"
+import { prismaClient } from "@repo/db/client"
+
 
 const app = express();
 
 app.post("/signup",(req,res)=>{
-    const data = CreateUserSchema.safeParse(req.body);
+    const parsedData = CreateUserSchema.safeParse(req.body);
+
 
     if(!data){
         res.json({
@@ -16,8 +19,15 @@ app.post("/signup",(req,res)=>{
         return;
     }
 
-    res.json({
-        userId : 123
+    prismaClient.user.create({
+
+        data : {
+            email: parsedData.data?.username,
+            password:parsedData.data?.password,
+            name:parsedData.data?.name
+        }
+
+        
     })
 })
 

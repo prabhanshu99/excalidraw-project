@@ -14,7 +14,7 @@ model User {
   email      String
   password   String
   name       String
-  photo      String
+  photo      String?
   rooms      Room[]
   chats      Chat[]
 }
@@ -37,3 +37,4 @@ model Chat {
   room        Room      @relation(fields: [roomId],references: [id])
   user        User      @relation(fields: [userId],references: [id])
 }
+
