@@ -12,6 +12,12 @@ type Shape = {
     centerX: number,
     centerY: number,
     radius: number
+} | {
+    type: "pencil";
+    startX: number;
+    startY: number;
+    endX: number;
+    endY: number;
 }
 
 export default async function InitDraw(canvas: HTMLCanvasElement, roomId: string, socket: WebSocket) {
@@ -109,7 +115,7 @@ export default async function InitDraw(canvas: HTMLCanvasElement, roomId: string
                 ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
                 ctx.stroke();
                 ctx.closePath();                
-            }
+            } 
         }
 
     })
