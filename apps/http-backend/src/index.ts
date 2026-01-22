@@ -5,6 +5,7 @@ import { middleware } from "./middleware";
 import { CreateRoomSchema, CreateUserSchema, SigninSchema } from "@repo/common/types"
 import { prismaClient } from "@repo/db/client"
 import cors from "cors";
+import bcrypt from "bcrypt"
 
 
 const app = express();
@@ -21,11 +22,12 @@ app.post("/signup",async(req,res)=>{
         return;
     }
     try {
+        const hashedPassword = await bcrypt.hash(parsedData.data.password, 10);
         const user = await prismaClient.user.create({
             data: {
                 email: parsedData.data?.username,
                 // TODO: Hash the pw
-                password: parsedData.data.password,
+                password: hashedPassword,
                 name: parsedData.data.name
             }
         })
@@ -55,8 +57,7 @@ app.post("/signin",async(req,res)=>{
 
     const user = await prismaClient.user.findFirst({
         where:{
-            email:parsedData.data?.username,
-            password:parsedData.data?.password
+            email:parsedData.data?.username
         }
     })
 
@@ -67,11 +68,28 @@ app.post("/signin",async(req,res)=>{
         return;
     }
 
+    if (!parsedData.success) {
+        return res.status(400).json({ error: "Invalid input" });
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(parsedData.data?.password,user.password);
+
+    if (!isPasswordCorrect) {
+        res.status(403).json({
+            message: "Incorrect password"
+        })
+        return;
+    }
 
     const token = jwt.sign({
         userId: user?.id
     },JWT_SECRET)
 
+    res.setHeader(
+        "Set-Cookie",
+        `token=${token}; HttpOnly; Secure; Path=/; SameSite=Strict`
+    );
+        
     res.json({
         token
     })
@@ -118,7 +136,7 @@ app.get("/chats/:roomId",async(req,res)=>{
         orderBy : {
             id: "desc"
         },
-        take: 50
+        take: 1000
     })
 
     res.json({

@@ -33,7 +33,6 @@ export function Canvas({ roomId, socket }: {
     }, []);
 
 
-
     return <div className="h-screen w-screen overflow-hidden">
         <canvas className="w-full h-full block" ref={CanvasRef} width={window.innerWidth} height={window.innerHeight}></canvas>
         <TopBar SetSelected={SetSelected} selected={selected} />
