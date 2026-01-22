@@ -5,7 +5,7 @@ import { IconComponent } from "./icons";
 import { Circle, Pencil, RectangleHorizontalIcon, MousePointer2, Eraser } from "lucide-react";
 import { Game } from "../draw/Game";
 
-export type Tool = "circle" | "rect" | "pencil" | "cursor" | "eraser";
+export type Tool = "circle" | "rect" | "pencil" | "cursor";
 
 export function Canvas({ roomId, socket }: {
     roomId: string,
@@ -60,13 +60,7 @@ function TopBar({ selected, SetSelected }: {
             <IconComponent activated={selected === "circle"} icon={<Circle />} onClick={() => {
                 SetSelected("circle")
             }} />
-            <IconComponent
-                activated={selected === "eraser"}
-                icon={<Eraser />}
-                onClick={() => SetSelected("eraser")}
-            />
-
-
+            
         </div>
     </div>
 }
