@@ -6,14 +6,14 @@ import Link from "next/link";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-export default function CreateRoomPage(){
+export default function CreateRoomPage() {
     const router = useRouter();
-    const [formData,setFormData] = useState({
-        name:""
+    const [formData, setFormData] = useState({
+        name: ""
     });
 
-    const handleInputchange = (e:React.ChangeEvent<HTMLInputElement>) => {
-        const {id,value} = e.target;
+    const handleInputchange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { id, value } = e.target;
         setFormData((prev) => ({ ...prev, [id]: value }));
     }
 
@@ -24,10 +24,21 @@ export default function CreateRoomPage(){
                 const data = {
                     name: formData.name,
                 };
-                const response = await axios.post("/room", data);
+                const token = localStorage.getItem("token");
+
+                const response = await axios.post(
+                    "http://localhost:3001/room",
+                    data,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
                 const roomId = response.data.roomId;
                 toast.success("Room created successfully");
-                router.push("/canvas/"+roomId);
+                router.push("/canvas/" + roomId);
             } catch (error) {
                 console.log(error);
                 toast.error("Something went wrong");

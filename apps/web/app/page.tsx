@@ -12,8 +12,10 @@ import {
   Check
 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const router = useRouter();
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Navigation */}
@@ -36,7 +38,9 @@ export default function Home() {
               <Link href="#about" className="text-slate-600 hover:text-slate-900 transition-colors">
                 About
               </Link>
-              <Button variant="outline">Sign In</Button>
+              <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded' onClick={() => {
+                router.push("/signup");
+              }} >Sign Up</button>
               <Button className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600">
                 Get Started
               </Button>

@@ -3,6 +3,7 @@ import { PencilRuler } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 export default function JoinRoomPage(){
     const router = useRouter();
@@ -20,6 +21,8 @@ export default function JoinRoomPage(){
         if (formData.roomId) {
             try {
                 router.push("/canvas/"+formData.roomId);
+                axios.get("http://localhost:3001/chats/:"+formData.roomId);
+
                 toast.success("Joined the room successfully");
             } catch (error) {
                 console.log(error);
