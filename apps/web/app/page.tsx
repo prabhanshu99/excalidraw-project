@@ -1,6 +1,7 @@
 'use client';
 
-import { Button } from '@repo/ui/button';
+import { PencilRuler } from "lucide-react";
+
 import {
   Pencil,
   Users,
@@ -8,27 +9,41 @@ import {
   Cloud,
   Lock,
   Sparkles,
-  ArrowRight,
   Check
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
+
 
 export default function Home() {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   const router = useRouter();
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-background">
       {/* Navigation */}
       <nav className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
-                <Pencil className="w-5 h-5 text-white" />
+                <PencilRuler onClick={() => {
+                  router.push("/");
+                }} className="w-5 h-5 text-white cursor-pointer" />
               </div>
               <span className="text-xl font-bold text-slate-900">DrawFlow</span>
             </div>
-            <div className="hidden md:flex items-center gap-8">
+            <div className="hidden md:flex items-center gap-6">
               <Link href="#features" className="text-slate-600 hover:text-slate-900 transition-colors">
                 Features
               </Link>
@@ -38,12 +53,20 @@ export default function Home() {
               <Link href="#about" className="text-slate-600 hover:text-slate-900 transition-colors">
                 About
               </Link>
-              <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded' onClick={() => {
+              <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer' onClick={() => {
                 router.push("/signup");
               }} >Sign Up</button>
-              <Button className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600">
-                Get Started
-              </Button>
+              <button
+                onClick={() =>
+                  setTheme(theme === "dark" ? "light" : "dark")
+                }
+                className="p-2 rounded-lg border border-border hover:bg-accent transition">
+                {theme === "dark" ? (
+                  <Sun className="w-5 h-5 text-yellow-400" />
+                ) : (
+                  <Moon className="w-5 h-5 text-slate-700" />
+                )}
+              </button>
             </div>
           </div>
         </div>
@@ -71,13 +94,12 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-lg h-14 px-8">
+              <button className="bg-gradient-to-r cursor-pointer rounded from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-lg h-14 px-8">
                 Start Drawing Now
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-              <Button size="lg" variant="outline" className="text-lg h-14 px-8">
+              </button>
+              <button className="text-lg h-14 px-8 cursor-pointer">
                 Watch Demo
-              </Button>
+              </button>
             </div>
 
             <div className="mt-12 flex items-center justify-center gap-8 text-sm text-slate-600">
@@ -102,7 +124,7 @@ export default function Home() {
             <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 p-4 sm:p-8">
               <div className="aspect-video bg-gradient-to-br from-blue-50 via-cyan-50 to-slate-50 rounded-lg flex items-center justify-center relative overflow-hidden border border-slate-200/50">
                 <div className="absolute inset-0 opacity-30">
-                  <div className="absolute inset-0" style={{backgroundImage: 'linear-gradient(0deg, transparent 24%, rgba(100, 150, 200, 0.05) 25%, rgba(100, 150, 200, 0.05) 26%, transparent 27%, transparent 74%, rgba(100, 150, 200, 0.05) 75%, rgba(100, 150, 200, 0.05) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(100, 150, 200, 0.05) 25%, rgba(100, 150, 200, 0.05) 26%, transparent 27%, transparent 74%, rgba(100, 150, 200, 0.05) 75%, rgba(100, 150, 200, 0.05) 76%, transparent 77%, transparent)', backgroundSize: '50px 50px'}}></div>
+                  <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(0deg, transparent 24%, rgba(100, 150, 200, 0.05) 25%, rgba(100, 150, 200, 0.05) 26%, transparent 27%, transparent 74%, rgba(100, 150, 200, 0.05) 75%, rgba(100, 150, 200, 0.05) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(100, 150, 200, 0.05) 25%, rgba(100, 150, 200, 0.05) 26%, transparent 27%, transparent 74%, rgba(100, 150, 200, 0.05) 75%, rgba(100, 150, 200, 0.05) 76%, transparent 77%, transparent)', backgroundSize: '50px 50px' }}></div>
                 </div>
                 <div className="relative z-10 text-center">
                   <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
@@ -209,13 +231,14 @@ export default function Home() {
             Join thousands of teams already collaborating on DrawFlow
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 text-lg h-14 px-8">
+            <button onClick={() => {
+              router.push("/signup");
+            }} className="bg-white text-blue-600 hover:bg-blue-50 text-lg h-14 px-8 cursor-pointer">
               Get Started Free
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-            <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white/10 text-lg h-14 px-8">
+            </button>
+            <button className="border-2 border-white text-white hover:bg-white/10 text-lg h-14 px-8 cursor-pointer">
               Talk to Sales
-            </Button>
+            </button>
           </div>
         </div>
       </section>
@@ -227,7 +250,7 @@ export default function Home() {
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
-                  <Pencil className="w-5 h-5 text-white" />
+                  <PencilRuler className="w-5 h-5 text-white" />
                 </div>
                 <span className="text-xl font-bold text-white">DrawFlow</span>
               </div>
@@ -261,7 +284,7 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-slate-800 pt-8 text-sm text-center">
-            <p>&copy; 2024 DrawFlow. All rights reserved.</p>
+            <p>&copy; 2026 DrawFlow. All rights reserved.</p>
           </div>
         </div>
       </footer>

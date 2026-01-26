@@ -1,148 +1,190 @@
 "use client";
 
-import { useState } from "react";
+import { PencilRuler } from "lucide-react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+import { useState } from "react";
 import Link from "next/link";
-
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-    CardFooter,
-} from "@/components/ui/card";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 export default function SignupPage() {
     const router = useRouter();
 
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [formData, setFormData] = useState({
+        name: "",
+        username: "",
+        password: "",
+    });
 
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
 
-    const data = {
-        name: name,
-        username: email,
-        password: password
-    }
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { id, value } = e.target;
 
-    async function handleSignup(e: React.FormEvent) {
+        setFormData((prev) => ({
+            ...prev,
+            [id]: value,
+        }));
+    };
+
+    const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        setLoading(true);
-        setError("");
+        if (!formData.name || !formData.username || !formData.password) {
+            toast.error("All fields are required");
+            return;
+        }
 
         try {
+            setLoading(true);
+
+            const data = {
+                name: formData.name,
+                username: formData.username,
+                password: formData.password,
+            };
+
             await axios.post("http://localhost:3001/signup", data);
 
-            // Redirect to Signin after successful signup
+            toast.success("Account created successfully");
+
+            // Redirect to login
             router.push("/signin");
 
-        } catch (err: any) {
-            setError(
-                err.response?.data?.message || "Signup failed"
+        } catch (error: any) {
+            console.log(error);
+
+            toast.error(
+                error.response?.data?.message || "Signup failed"
             );
         } finally {
             setLoading(false);
         }
-    }
+    };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-zinc-950">
-            <Card className="w-[360px]">
+        <>
+            <div className="bg-gradient-to-t from-indigo-900 to-white via-indigo-300 dark:from-gray-950 dark:to-indigo-900">
 
-                <CardHeader>
-                    <CardTitle>Create Account</CardTitle>
-                </CardHeader>
+                {/* Back Icon */}
+                <div className="absolute top-50 right-50 p-4 cursor-pointer">
+                    <PencilRuler
+                        className="h-8 w-auto text-indigo-600 dark:text-indigo-400"
+                        onClick={() => {
+                            router.push("/");
+                        }}
+                    />
+                </div>
 
-                <CardContent>
-                    <form
-                        onSubmit={handleSignup}
-                        className="space-y-4"
-                    >
+                <div className="flex min-h-screen items-center justify-center">
 
-                        {/* Name */}
-                        <div className="space-y-1">
-                            <Label htmlFor="name">Name</Label>
+                    <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
 
-                            <Input
-                                id="name"
-                                placeholder="John Doe"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                required
-                                minLength={3}
-                                maxLength={30}
-                            />
+                        {/* Heading */}
+                        <div className="text-center">
+                            <h1 className="text-2xl font-bold text-gray-800">
+                                Create Your Account
+                            </h1>
                         </div>
 
-                        {/* Email */}
-                        <div className="space-y-1">
-                            <Label htmlFor="email">Email</Label>
-
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder="you@example.com"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                            />
-                        </div>
-
-                        {/* Password */}
-                        <div className="space-y-1">
-                            <Label htmlFor="password">Password</Label>
-
-                            <Input
-                                id="password"
-                                type="password"
-                                placeholder="••••••••"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                                minLength={6}
-                            />
-                        </div>
-
-                        {/* Error */}
-                        {error && (
-                            <p className="text-sm text-red-500">
-                                {error}
-                            </p>
-                        )}
-
-                        {/* Submit */}
-                        <Button
-                            type="submit"
-                            className="w-full"
-                            disabled={loading}
+                        {/* Form */}
+                        <form
+                            className="mt-6"
+                            onSubmit={handleSignup}
                         >
-                            {loading ? "Creating..." : "Sign Up"}
-                        </Button>
 
-                    </form>
-                </CardContent>
+                            {/* Name */}
+                            <div className="mb-4">
+                                <label
+                                    htmlFor="name"
+                                    className="block text-sm font-medium text-gray-700"
+                                >
+                                    Full Name
+                                </label>
 
-                <CardFooter className="flex justify-center">
-                    <p className="text-sm text-zinc-400">
-                        Already have an account?{" "}
-                        <Link
-                            href="/login"
-                            className="text-blue-400 hover:underline"
-                        >
-                            Login
-                        </Link>
-                    </p>
-                </CardFooter>
+                                <input
+                                    type="text"
+                                    id="name"
+                                    value={formData.name}
+                                    onChange={handleInputChange}
+                                    className="mt-1 block w-full px-3 py-2 border text-zinc-800 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    placeholder="Prabhanshu Narnaware"
+                                    required
+                                />
+                            </div>
 
-            </Card>
-        </div>
+                            {/* Username */}
+                            <div className="mb-4">
+                                <label
+                                    htmlFor="username"
+                                    className="block text-sm font-medium text-gray-700"
+                                >
+                                    Username
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="username"
+                                    value={formData.username}
+                                    onChange={handleInputChange}
+                                    className="mt-1 block w-full px-3 py-2 border text-zinc-800 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    placeholder="prabhanshu123"
+                                    minLength={3}
+                                    maxLength={20}
+                                    required
+                                />
+                            </div>
+
+                            {/* Password */}
+                            <div className="mb-4">
+                                <label
+                                    htmlFor="password"
+                                    className="block text-sm font-medium text-gray-700"
+                                >
+                                    Password
+                                </label>
+
+                                <input
+                                    type="password"
+                                    id="password"
+                                    value={formData.password}
+                                    onChange={handleInputChange}
+                                    className="mt-1 block w-full px-3 py-2 border text-zinc-800 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    placeholder="••••••••"
+                                    minLength={6}
+                                    required
+                                />
+                            </div>
+
+                            {/* Submit Button */}
+                            <div>
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className="w-full py-2 px-4 bg-indigo-600 cursor-pointer text-white rounded-md hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none sm:text-sm font-medium disabled:opacity-60"
+                                >
+                                    {loading ? "Creating..." : "Sign Up"}
+                                </button>
+                            </div>
+
+                            {/* Login Link */}
+                            <div className="text-center mt-4">
+                                <p className="text-zinc-700">
+                                    Already have an account?{" "}
+                                    <Link
+                                        className="underline"
+                                        href="/signin"
+                                    >
+                                        Login
+                                    </Link>
+                                </p>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </>
     );
 }
