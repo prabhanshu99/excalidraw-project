@@ -19,6 +19,7 @@ import { useEffect, useState } from "react";
 
 
 export default function Home() {
+  const router = useRouter();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -27,8 +28,6 @@ export default function Home() {
   }, []);
 
   if (!mounted) return null;
-
-  const router = useRouter();
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}

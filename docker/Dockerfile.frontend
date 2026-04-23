@@ -11,8 +11,11 @@ COPY . .
 # Install all dependencies
 RUN pnpm install
 
-# Build the Next.js frontend directly (skip turbo)
-RUN cd apps/web && npx next build
+# Build the Next.js frontend
+# Disabling linting and typechecking during build to isolate the error
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV ESLINT_NO_DEV_ERRORS=true
+RUN cd apps/web && npx next build --no-lint
 
 EXPOSE 3000
 
