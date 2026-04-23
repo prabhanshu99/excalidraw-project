@@ -11,13 +11,11 @@ COPY . .
 # Install all dependencies
 RUN pnpm install
 
-# Build the Next.js frontend
-# Disabling linting and typechecking during build to isolate the error
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV ESLINT_NO_DEV_ERRORS=true
-RUN cd apps/web && npx next build --no-lint
+# Build the Next.js frontend using pnpm filter from root
+# This ensures workspace dependencies are correctly resolved
+RUN pnpm --filter web build
 
 EXPOSE 3000
 
 # Start the Next.js server
-CMD ["npx", "--prefix", "apps/web", "next", "start"]
+CMD ["pnpm", "--filter", "web", "start"]
