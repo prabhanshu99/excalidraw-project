@@ -3,9 +3,6 @@ FROM node:18-alpine
 # Enable pnpm
 RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
 
-# Install turbo globally so it's always available
-RUN npm install -g turbo
-
 WORKDIR /app
 
 # Copy the entire monorepo
@@ -14,10 +11,10 @@ COPY . .
 # Install all dependencies
 RUN pnpm install
 
-# Build the Next.js frontend
-RUN turbo run build --filter=web
+# Build the Next.js frontend directly (skip turbo)
+RUN cd apps/web && npx next build
 
 EXPOSE 3000
 
 # Start the Next.js server
-CMD ["pnpm", "--filter", "web", "start"]
+CMD ["npx", "--prefix", "apps/web", "next", "start"]

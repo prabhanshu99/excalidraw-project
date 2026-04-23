@@ -33,6 +33,8 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
+            --progress=plain \
+            --no-cache \
             -f ${{ matrix.dockerfile }} \
             -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image }}:latest \
             -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image }}:${{ github.sha }} \
