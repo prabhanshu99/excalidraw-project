@@ -1,28 +1,24 @@
-FROM node:18-alpine AS base
-
-# Add libc6-compat for compatibility with some native modules
-RUN apk add --no-cache libc6-compat
-RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
+FROM node:20-alpine
+ARG NEXT_PUBLIC_BACKEND_URL
+ARG NEXT_PUBLIC_WEBSOCKET_URL
 
 WORKDIR /app
 
-# Copy the entire monorepo
-COPY . .
+RUN npm install -g pnpm
 
-# Install dependencies
+COPY ./pnpm-lock.yaml ./pnpm-lock.yaml
+COPY ./pnpm-workspace.yaml ./pnpm-workspace.yaml
+
+COPY ./package.json ./package.json
+COPY ./turbo.json ./turbo.json
+
+COPY ./apps/web ./apps/web
+
 RUN pnpm install
-
-# Build parameters
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_ENV=production
-
-# Increase memory limit for Node.js build
-ENV NODE_OPTIONS="--max-old-space-size=4096"
-
-# Build the frontend
-RUN pnpm --filter web build
-
+ENV NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
+ENV NEXT_PUBLIC_WEBSOCKET_URL=${NEXT_PUBLIC_WEBSOCKET_URL}
+RUN pnpm --filter web run build
+WORKDIR /app/apps/web
 EXPOSE 3000
 
-# Start command
-CMD ["pnpm", "--filter", "web", "start"]
+CMD [ "pnpm","run","start"]

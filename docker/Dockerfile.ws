@@ -1,23 +1,24 @@
-FROM node:18-alpine
-
-# Enable pnpm
-RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
+FROM node:20-alpine
+ARG DATABASE_URL
 
 WORKDIR /app
 
-# Copy the entire monorepo
-COPY . .
+RUN npm install -g pnpm
 
-# Install all dependencies
+COPY ./packages ./packages
+COPY ./pnpm-lock.yaml ./pnpm-lock.yaml
+COPY ./pnpm-workspace.yaml ./pnpm-workspace.yaml
+
+COPY ./package.json ./package.json
+COPY ./turbo.json ./turbo.json
+
+COPY ./apps/ws-backend/ ./apps/ws-backend
+
 RUN pnpm install
-
-# Generate Prisma client
-RUN cd packages/db && npx prisma generate
-
-# Build the WebSocket backend
-RUN cd apps/ws-backend && pnpm run build
-
+ENV DATABASE_URL=${DATABASE_URL}
+RUN pnpm --filter @repo/db exec prisma generate
+RUN pnpm --filter ws-backend run build
+WORKDIR /app/apps/ws-backend
 EXPOSE 3002
 
-# Start the WebSocket server
-CMD ["node", "apps/ws-backend/dist/index.js"]
+CMD [ "pnpm","run","start"]
