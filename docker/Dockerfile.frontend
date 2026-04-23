@@ -5,14 +5,21 @@ RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
 
 WORKDIR /app
 
+# ARGs for build-time environment variables
+ARG NEXT_PUBLIC_HTTP_BACKEND_URL
+ARG NEXT_PUBLIC_WS_BACKEND_URL
+
+# Set as ENVs so Next.js can see them during 'next build'
+ENV NEXT_PUBLIC_HTTP_BACKEND_URL=$NEXT_PUBLIC_HTTP_BACKEND_URL
+ENV NEXT_PUBLIC_WS_BACKEND_URL=$NEXT_PUBLIC_WS_BACKEND_URL
+
 # Copy the entire monorepo
 COPY . .
 
 # Install all dependencies
 RUN pnpm install
 
-# Build the Next.js frontend using pnpm filter from root
-# This ensures workspace dependencies are correctly resolved
+# Build the Next.js frontend
 RUN pnpm --filter web build
 
 EXPOSE 3000

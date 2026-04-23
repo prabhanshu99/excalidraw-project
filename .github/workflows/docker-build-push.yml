@@ -32,9 +32,15 @@ jobs:
 
       - name: Build Docker image
         run: |
+          BUILD_ARGS=""
+          if [ "${{ matrix.service }}" == "frontend" ]; then
+            BUILD_ARGS="--build-arg NEXT_PUBLIC_HTTP_BACKEND_URL=${{ secrets.NEXT_PUBLIC_HTTP_BACKEND_URL }} --build-arg NEXT_PUBLIC_WS_BACKEND_URL=${{ secrets.NEXT_PUBLIC_WS_BACKEND_URL }}"
+          fi
+
           docker build \
             --progress=plain \
             --no-cache \
+            $BUILD_ARGS \
             -f ${{ matrix.dockerfile }} \
             -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image }}:latest \
             -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image }}:${{ github.sha }} \

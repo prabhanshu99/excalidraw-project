@@ -1,1 +1,1 @@
-export const HTTP_BACKEND = "http://localhost:3001";
+export const HTTP_BACKEND = process.env.NEXT_PUBLIC_HTTP_BACKEND_URL || "http://localhost:3001";
