@@ -20,8 +20,10 @@ export function Canvas({ roomId, socket }: {
     }, [selected, game])
 
     useEffect(() => {
-
         if (CanvasRef.current) {
+            CanvasRef.current.width = window.innerWidth;
+            CanvasRef.current.height = window.innerHeight;
+            
             const g = new Game(CanvasRef.current, roomId, socket);
             setGame(g);
 
@@ -29,12 +31,11 @@ export function Canvas({ roomId, socket }: {
                 g.destroy();
             }
         }
-
     }, []);
 
 
     return <div className="h-screen w-screen overflow-hidden">
-        <canvas className="w-full h-full block" ref={CanvasRef} width={window.innerWidth} height={window.innerHeight}></canvas>
+        <canvas className="w-full h-full block" ref={CanvasRef}></canvas>
         <TopBar SetSelected={SetSelected} selected={selected} />
     </div>
 }

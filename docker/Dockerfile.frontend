@@ -1,28 +1,28 @@
-FROM node:18-alpine
+FROM node:18-alpine AS base
 
-# Enable pnpm
+# Add libc6-compat for compatibility with some native modules
+RUN apk add --no-cache libc6-compat
 RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
 
 WORKDIR /app
 
-# ARGs for build-time environment variables
-ARG NEXT_PUBLIC_HTTP_BACKEND_URL
-ARG NEXT_PUBLIC_WS_BACKEND_URL
-
-# Set as ENVs so Next.js can see them during 'next build'
-ENV NEXT_PUBLIC_HTTP_BACKEND_URL=$NEXT_PUBLIC_HTTP_BACKEND_URL
-ENV NEXT_PUBLIC_WS_BACKEND_URL=$NEXT_PUBLIC_WS_BACKEND_URL
-
 # Copy the entire monorepo
 COPY . .
 
-# Install all dependencies
+# Install dependencies
 RUN pnpm install
 
-# Build the Next.js frontend
+# Build parameters
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+
+# Increase memory limit for Node.js build
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+
+# Build the frontend
 RUN pnpm --filter web build
 
 EXPOSE 3000
 
-# Start the Next.js server
+# Start command
 CMD ["pnpm", "--filter", "web", "start"]
